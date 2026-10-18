@@ -4,6 +4,7 @@ import { LandingPage } from "./features/landing/pages/LandingPage";
 import { AuthPage } from "./features/auth/pages/AuthPage";
 import { OnboardingPage } from "./features/onboarding/pages/OnboardingPage";
 import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
+import { ServerKeepAlive } from "./components/common/ServerKeepAlive";
 
 /**
  * Root Application Router & Global Context Providers.
@@ -11,6 +12,7 @@ import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
 export function App() {
   return (
     <AuthProvider>
+      <ServerKeepAlive />
       <BrowserRouter>
         <Routes>
           {/* Landing Page */}

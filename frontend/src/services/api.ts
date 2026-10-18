@@ -34,9 +34,13 @@ export const checkBackendHealth = async (): Promise<HealthResponse> => {
   return response.data;
 };
 
+export const AI_SERVICE_BASE_URL =
+  (import.meta as any).env?.VITE_AI_SERVICE_URL || "http://localhost:8000";
+
 export const checkAiServiceHealth = async (): Promise<HealthResponse> => {
   const response = await axios.get<HealthResponse>(
-    "http://localhost:8000/api/ai/health",
+    `${AI_SERVICE_BASE_URL}/api/ai/health`,
   );
   return response.data;
 };
+
