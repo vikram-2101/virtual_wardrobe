@@ -150,11 +150,15 @@ public class AvatarService {
     }
 
     private AvatarResponse mapToResponse(Avatar avatar) {
+        String url = avatar.getImageKey() != null
+                ? storageService.getObjectUrl(avatar.getImageKey())
+                : avatar.getImageUrl();
+
         return AvatarResponse.builder()
                 .id(avatar.getId())
                 .userId(avatar.getUser().getId())
                 .imageKey(avatar.getImageKey())
-                .imageUrl(avatar.getImageUrl())
+                .imageUrl(url)
                 .source(avatar.getSource())
                 .isCanonical(avatar.isCanonical())
                 .createdAt(avatar.getCreatedAt())

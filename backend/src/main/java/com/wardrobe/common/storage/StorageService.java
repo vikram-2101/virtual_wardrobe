@@ -58,11 +58,34 @@ public class StorageService {
         }
     }
 
+    @Value("${storage.s3.public-url:}")
+    private String publicUrlBase;
+
     public String getObjectUrl(String key) {
         if (key == null || key.isBlank()) {
             return null;
         }
-        return String.format("%s/%s/%s", s3Endpoint.replaceAll("/$", ""), defaultBucket, key);
+
+        String cleanKey = key.replaceFirst("^/", "");
+
+        // 1. If explicit public URL base provided, use it
+        if (publicUrlBase != null && !publicUrlBase.isBlank()) {
+            return String.format("%s/%s/%s", publicUrlBase.replaceAll("/$", ""), defaultBucket, cleanKey);
+        }
+
+        String endpoint = s3Endpoint.replaceAll("/$", "");
+
+        // 2. If using Supabase S3 endpoint, automatically convert to public HTTP URL:
+        // https://<ref>.storage.supabase.co/storage/v1/s3 -> https://<ref>.supabase.co/storage/v1/object/public
+        if (endpoint.contains("supabase.co") && endpoint.contains("/storage/v1/s3")) {
+            String publicEndpoint = endpoint
+                    .replace(".storage.supabase.co", ".supabase.co")
+                    .replace("/storage/v1/s3", "/storage/v1/object/public");
+            return String.format("%s/%s/%s", publicEndpoint, defaultBucket, cleanKey);
+        }
+
+        // 3. Fallback for MinIO or standard S3
+        return String.format("%s/%s/%s", endpoint, defaultBucket, cleanKey);
     }
 
     public boolean checkHealth() {

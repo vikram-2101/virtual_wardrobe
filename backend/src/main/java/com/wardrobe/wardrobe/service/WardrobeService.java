@@ -222,13 +222,18 @@ public class WardrobeService {
 
     public WardrobeItemResponse mapToResponse(WardrobeItem item) {
         List<WardrobeImageResponse> imageResponses = item.getImages() != null ? item.getImages().stream()
-                .map(img -> WardrobeImageResponse.builder()
-                        .id(img.getId())
-                        .imageKey(img.getImageKey())
-                        .imageUrl(img.getImageUrl())
-                        .imageType(img.getImageType())
-                        .createdAt(img.getCreatedAt())
-                        .build())
+                .map(img -> {
+                    String url = img.getImageKey() != null
+                            ? storageService.getObjectUrl(img.getImageKey())
+                            : img.getImageUrl();
+                    return WardrobeImageResponse.builder()
+                            .id(img.getId())
+                            .imageKey(img.getImageKey())
+                            .imageUrl(url)
+                            .imageType(img.getImageType())
+                            .createdAt(img.getCreatedAt())
+                            .build();
+                })
                 .collect(Collectors.toList()) : new ArrayList<>();
 
         String primaryUrl = imageResponses.stream()
